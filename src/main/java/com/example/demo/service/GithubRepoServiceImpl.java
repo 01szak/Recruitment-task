@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.model.GithubReposDTO;
 import com.example.demo.model.UsersGithubRepoDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
