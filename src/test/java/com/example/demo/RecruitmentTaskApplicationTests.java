@@ -82,9 +82,9 @@ class RecruitmentTaskApplicationTests {
 		assertEquals(REPO_NAME, actualRepo.repositoryName());
 		assertEquals(OWNER_LOGIN, actualRepo.ownerLogin());
 
-		assertEquals(1, actualRepo.Branches().size());
+		assertEquals(1, actualRepo.branches().size());
 
-		var actualBranch = actualRepo.Branches().getFirst();
+		var actualBranch = actualRepo.branches().getFirst();
 
 		assertEquals(BRANCH_NAME, actualBranch.name());
 		assertEquals(SHA, actualBranch.sha());

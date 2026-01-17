@@ -5,7 +5,7 @@ import java.util.List;
 public record UsersGithubRepoDTO(
         String repositoryName,
         String ownerLogin,
-        List<BranchDTO> Branches
+        List<BranchDTO> branches
 ) {
 
     public record BranchDTO (
