@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.model.GithubReposDTO;
 import com.example.demo.model.UsersGithubRepoDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,14 +13,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+import static com.example.demo.service.GithubConstant.*;
+
 @Service
 public class GithubRepoServiceImpl implements GithubRepoService {
 
-    private final RestTemplate restTemplate;
+    @Value("${github.base-url}")
+    private String baseUrl;
 
-    private static final String ACCEPT_HEADER = "application/vnd.github+json";
-    private static final String GET_REPOS_PATH = "https://api.github.com/users/%s/repos";
-    private static final String GET_BRANCHES_PATH = "https://api.github.com/repos/%s/%s/branches";
+    private final RestTemplate restTemplate;
 
     public GithubRepoServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -30,24 +32,25 @@ public class GithubRepoServiceImpl implements GithubRepoService {
         var userRepos = new ArrayList<UsersGithubRepoDTO>();
         var githubReposPtr = new ParameterizedTypeReference<List<GithubReposDTO>>(){};
         var branchesPtr = new ParameterizedTypeReference<List<GithubReposDTO.Branch>>(){};
-
         var httpEntity = new HttpEntity<>(getHeaders());
+        var path = baseUrl + GET_REPOS_PATH.getValue(username);
 
         var reposResponse =  restTemplate.exchange(
-                String.format(GET_REPOS_PATH, username),
+                path,
                 HttpMethod.GET,
                 httpEntity,
                 githubReposPtr
         ).getBody();
 
         if (reposResponse == null) {
-            throw new IllegalStateException("Response from Github is null, try again!");
+            throw new IllegalStateException("Github returned any repos, try again!");
         }
 
 
         for (var repo : reposResponse) {
+            path = baseUrl + GET_BRANCHES_PATH.getValue(username, repo.name());
             var branchesResponse =  restTemplate.exchange(
-                    String.format(GET_BRANCHES_PATH, username, repo.name()),
+                    path,
                     HttpMethod.GET,
                     httpEntity,
                     branchesPtr
@@ -69,7 +72,7 @@ public class GithubRepoServiceImpl implements GithubRepoService {
 
     private HttpHeaders getHeaders() {
         var headers = new HttpHeaders();
-        headers.set("Accept", ACCEPT_HEADER);
+        headers.set("Accept", ACCEPT_HEADER.getValue());
         return headers;
     }
 }
